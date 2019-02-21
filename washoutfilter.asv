@@ -33,18 +33,9 @@ for i = 1:count
         washoutfilterdo(x(i), y(i), z(i), roll(i), pitch(i), yaw(i), ...
         xacc(i), yacc(i), zacc(i), rollSpeed(i), pitchSpeed(i), yawSpeed(i));
 end
-figure;
-plot(z);
-figure;
-plot(y);
-figure;
-plot(z);
-figure;
+
 plot(roll);
-figure;
-plot(pitch);
-figure;
-plot(yaw);
+
 
 function [x_r, y_r, z_r, roll_r, pitch_r, yaw_r] = washoutfilterdo(x, y, z, roll, pitch, yaw, xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed)
 global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
@@ -92,11 +83,7 @@ for i = 1 : ACC_NUM
     end
 end
 x_r = poses(1);
-y_r = poses(2);
-z_r = poses(3);
-roll_r = betaS(1);
-pitch_r = betaS(2);
-yaw_r = betaS(3);
+
 
 function [xacc, yacc, zacc, rollSpd, pitchSpd, yawSpd, roll, pitch, yaw] = readtxt()
 data = load('illusiondata.txt');

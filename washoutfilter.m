@@ -5,21 +5,21 @@ global dT fs count  hpfAccWn lpfAccWn hpfAngleSpdWn inputs outputs
 global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
 dT = 0.047;
 fs = 1 / dT;
-count = 9000;
+count = 7000;
 IS_USE_TRANS_MATRIX = 1;
 IS_ADD_COOR_TURN_GAIN = 1;
-hpfAccWn = 1.5;
-lpfAccWn = 1.0;
-hpfAngleSpdWn = 1.0;
-inputs = zeros(12, 4);
-outputs = zeros(12, 4);
+hpfAccWn = 1.0;
+lpfAccWn = 0.5;
+hpfAngleSpdWn = 0.5;
+inputs = zeros(12, 3);
+outputs = zeros(12, 3);
 roll = zeros(count, 1);    % deg
 pitch = zeros(count, 1);   % deg
 yaw = zeros(count, 1);     % deg
 x = zeros(count, 1);       % deg
 y = zeros(count, 1);       % deg
 z = zeros(count, 1);       % deg
-[xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed, roll, pitch, yaw] = readtxt();
+[xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed, rolltxt, pitchtxt, yawtxt] = readtxt();
 
 global accHighPassFilters_nums accHighPassFilters_dens accIntZtrans_nums accIntZtrans_dens
 global accLowPassFilter_nums accLowPassFilter_dens angleHpfAndInt_nums angleHpfAndInt_dens
@@ -33,18 +33,16 @@ for i = 1:count
         washoutfilterdo(x(i), y(i), z(i), roll(i), pitch(i), yaw(i), ...
         xacc(i), yacc(i), zacc(i), rollSpeed(i), pitchSpeed(i), yawSpeed(i));
 end
+
 figure;
-plot(z);
+plot(x);
 figure;
 plot(y);
-figure;
-plot(z);
 figure;
 plot(roll);
 figure;
 plot(pitch);
-figure;
-plot(yaw);
+
 
 function [x_r, y_r, z_r, roll_r, pitch_r, yaw_r] = washoutfilterdo(x, y, z, roll, pitch, yaw, xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed)
 global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
@@ -84,7 +82,7 @@ for i = 1 : ACC_NUM
     ahigh(i) = filtersdo(a2(i),accHighPassFilters_nums, accHighPassFilters_dens ,filtersindex); filtersindex = filtersindex + 1;
     poses(i) = filtersdo(ahigh(i),accIntZtrans_nums, accIntZtrans_dens ,filtersindex) * 1000.0; filtersindex = filtersindex + 1;
     flow(i) = filtersdo(fAA(i),accLowPassFilter_nums, accLowPassFilter_dens ,filtersindex); filtersindex = filtersindex + 1;
-    betalow(I) = rad2deg(flow(i) * coor_turn_gain);
+    betalow(i) = rad2deg(flow(i) * coor_turn_gain);
     if IS_ADD_COOR_TURN_GAIN == 1
 		betaS(i) = betalow(i) + filtersdo(beta2(i),angleHpfAndInt_nums, angleHpfAndInt_dens, filtersindex); filtersindex = filtersindex + 1;
     else
@@ -189,10 +187,10 @@ input = circshift(input',1)';
 input(1) = now;
 inputs(filtersindex, 1:end) = input;
 
-for i = 1:3
+for i = 1:2
     out = out - inner_dens(i + 1) * output(i);
 end
-for i = 1:4
+for i = 1:3
     out = out + inner_nums(i) * input(i);
 end
 

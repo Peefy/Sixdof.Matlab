@@ -115,7 +115,8 @@ pitch_r = betaS(2) * pitch_scale;
 yaw_r = betaS(3) * yaw_scale;
 
 function [xacc, yacc, zacc, rollSpd, pitchSpd, yawSpd, roll, pitch, yaw] = readtxt()
-data = load('illusiondata.txt');
+% data = load('illusiondata.txt');
+data = load('errordata.txt');
 xacc = data(1:end, 1);
 yacc = data(1:end, 2);
 zacc = data(1:end, 3);

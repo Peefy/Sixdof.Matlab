@@ -8,7 +8,7 @@ dT = 0.047;
 fs = 1 / dT;
 count = 20000;
 IS_USE_TRANS_MATRIX = 1;
-IS_ADD_COOR_TURN_GAIN = 1;
+IS_ADD_COOR_TURN_GAIN = 0;
 hpfAccWn = 1.0;
 lpfAccWn = 0.5;
 hpfAngleSpdWn = 0.5;
@@ -36,7 +36,7 @@ global accLowPassFilter_nums accLowPassFilter_dens angleHpfAndInt_nums angleHpfA
 [accLowPassFilter_nums, accLowPassFilter_dens] = build_accLowPassFilter();
 [angleHpfAndInt_nums, angleHpfAndInt_dens] = build_angleHpfAndInt();
 
-for i = 1:count
+for i = 1 : count
     [x(i + 1), y(i + 1), z(i + 1), roll(i + 1), pitch(i + 1), yaw(i + 1)] = ...
         washoutfilterdo(x(i), y(i), z(i), roll(i), pitch(i), yaw(i), ...
         yacc(i), xacc(i), zacc(i), rollSpeed(i), pitchSpeed(i), yawSpeed(i));

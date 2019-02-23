@@ -6,7 +6,7 @@ global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
 global roll_scale pitch_scale yaw_scale x_scale y_scale z_scale
 dT = 0.047;
 fs = 1 / dT;
-count = 20000;
+count = 90000;
 IS_USE_TRANS_MATRIX = 1;
 IS_ADD_COOR_TURN_GAIN = 0;
 hpfAccWn = 1.0;
@@ -20,8 +20,8 @@ yaw = zeros(count, 1);     % deg
 x = zeros(count, 1);       % deg
 y = zeros(count, 1);       % deg
 z = zeros(count, 1);       % deg
-roll_scale = 2.0;
-pitch_scale = 16.0;
+roll_scale = 4.0;
+pitch_scale = 4.0;
 yaw_scale = 2.0;
 x_scale = 2.0;
 y_scale = 2.0; 
@@ -37,26 +37,27 @@ global accLowPassFilter_nums accLowPassFilter_dens angleHpfAndInt_nums angleHpfA
 [angleHpfAndInt_nums, angleHpfAndInt_dens] = build_angleHpfAndInt();
 
 for i = 1 : count
+    i
     [x(i + 1), y(i + 1), z(i + 1), roll(i + 1), pitch(i + 1), yaw(i + 1)] = ...
         washoutfilterdo(x(i), y(i), z(i), roll(i), pitch(i), yaw(i), ...
-        yacc(i), xacc(i), zacc(i), rollSpeed(i), pitchSpeed(i), yawSpeed(i));
+        yacc(i), xacc(i), zacc(i), rollSpeed(i), pitchSpeed(i), rollSpeed(i));
 end
 
 figure;
-plot(pitchSpeed * 20);
+plot(pitchSpeed(1:count) * 20);
 hold on;
-plot(pitch);
+plot(pitch * pitch_scale);
 hold on;
-plot(pitchtxt);
+plot(pitchtxt(1:count));
 title('pitch')
 legend('pitchSpeed','pitchout', 'pitch')
 
 figure;
-plot(rollSpeed * 20);
+plot(rollSpeed(1:count) * 20);
 hold on;
-plot(roll);
+plot(roll * roll_scale);
 hold on;
-plot(rolltxt);
+plot(rolltxt(1:count));
 title('roll')
 legend('rollSpeed','rollout', 'roll')
 
@@ -65,7 +66,6 @@ function [x_r, y_r, z_r, roll_r, pitch_r, yaw_r] = washoutfilterdo(x, y, z, roll
 global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
 global accHighPassFilters_nums accHighPassFilters_dens accIntZtrans_nums accIntZtrans_dens
 global accLowPassFilter_nums accLowPassFilter_dens angleHpfAndInt_nums angleHpfAndInt_dens
-global roll_scale pitch_scale yaw_scale x_scale y_scale z_scale
 acc_scale = 0.01;
 angleSpd_scale = 10.0;
 coor_turn_gain = 0.1;
@@ -107,12 +107,12 @@ for i = 1 : ACC_NUM
         betaS(i) = filtersdo(beta2(i), angleHpfAndInt_nums, angleHpfAndInt_dens, filtersindex); filtersindex = filtersindex + 1;
     end
 end
-x_r = poses(1) * x_scale;
-y_r = poses(2) * y_scale;
-z_r = poses(3) * z_scale;
-roll_r = betaS(1) * roll_scale;
-pitch_r = betaS(2) * pitch_scale;
-yaw_r = betaS(3) * yaw_scale;
+x_r = poses(1);
+y_r = poses(2);
+z_r = poses(3);
+roll_r = betaS(1);
+pitch_r = betaS(2);
+yaw_r = betaS(3);
 
 function [xacc, yacc, zacc, rollSpd, pitchSpd, yawSpd, roll, pitch, yaw] = readtxt()
 % data = load('illusiondata.txt');
@@ -121,8 +121,8 @@ xacc = data(1:end, 1);
 yacc = data(1:end, 2);
 zacc = data(1:end, 3);
 rollSpd = data(1:end, 4);
-pitchSpd = data(1:end, 5);
-yawSpd = data(1:end, 6);
+yawSpd = data(1:end, 5);
+pitchSpd = data(1:end, 6);
 roll = data(1:end, 7);
 pitch = data(1:end, 8);
 yaw = data(1:end, 9);
@@ -218,33 +218,36 @@ output(1) = out;
 outputs(filtersindex, 1:end) = output;
 
 function plotAllRecieveData(xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed, rolltxt, pitchtxt, yawtxt)
+global count
 figure;
-plot(xacc);
+plot(xacc(1:count));
 hold on;
-plot(yacc);
+plot(yacc(1:count));
 hold on;
-plot(zacc);
+plot(zacc(1:count));
 hold on;
-plot(pitchtxt);
+plot(pitchtxt(1:count));
+title('recieve xacc yacc zacc');
 legend('xacc','yacc','zacc', 'pitchtxt');
 
 figure;
-plot(rollSpeed * 10);
+plot(rollSpeed(1:count) * 10);
 hold on;
-plot(pitchSpeed * 10);
+plot(pitchSpeed(1:count) * 10);
 hold on;
-plot(yawSpeed * 10);
+plot(yawSpeed(1:count) * 10);
 hold on;
 plot(pitchtxt);
+title('recieve rollSpd pitchSpd yawSpd');
 legend('rollSpeed','pitchSpeed','yawSpeed', 'pitchtxt')
 
 figure;
-plot(rolltxt);
+plot(rolltxt(1:count));
 hold on;
-plot(pitchtxt);
+plot(pitchtxt(1:count));
 hold on;
-plot(yawtxt);
-title('recieve total');
+plot(yawtxt(1:count));
+title('recieve roll pitch yaw');
 legend('rolltxt','pitchtxt','yawtxt');
 
 

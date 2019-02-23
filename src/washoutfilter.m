@@ -6,7 +6,7 @@ global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
 global roll_scale pitch_scale yaw_scale x_scale y_scale z_scale
 dT = 0.047;
 fs = 1 / dT;
-count = 90000;
+count = 5000;
 IS_USE_TRANS_MATRIX = 1;
 IS_ADD_COOR_TURN_GAIN = 0;
 hpfAccWn = 1.0;
@@ -115,8 +115,8 @@ pitch_r = betaS(2);
 yaw_r = betaS(3);
 
 function [xacc, yacc, zacc, rollSpd, pitchSpd, yawSpd, roll, pitch, yaw] = readtxt()
-% data = load('illusiondata.txt');
-data = load('errordata.txt');
+data = load('illusiondata.txt');
+% data = load('errordata.txt');
 xacc = data(1:end, 1);
 yacc = data(1:end, 2);
 zacc = data(1:end, 3);
@@ -226,18 +226,18 @@ plot(yacc(1:count));
 hold on;
 plot(zacc(1:count));
 hold on;
-plot(pitchtxt(1:count));
+%plot(pitchtxt(1:count));
 title('recieve xacc yacc zacc');
 legend('xacc','yacc','zacc', 'pitchtxt');
 
 figure;
-plot(rollSpeed(1:count) * 10);
+plot(rollSpeed(1:count));
 hold on;
-plot(pitchSpeed(1:count) * 10);
+plot(pitchSpeed(1:count));
 hold on;
-plot(yawSpeed(1:count) * 10);
+plot(yawSpeed(1:count));
 hold on;
-plot(pitchtxt);
+%plot(pitchtxt(1:count));
 title('recieve rollSpd pitchSpd yawSpd');
 legend('rollSpeed','pitchSpeed','yawSpeed', 'pitchtxt')
 

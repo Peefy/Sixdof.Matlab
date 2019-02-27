@@ -8,9 +8,9 @@ dT = 0.047;
 fs = 1 / dT;
 count = 8000;
 IS_USE_TRANS_MATRIX = 1;
-IS_ADD_COOR_TURN_GAIN = 0;
+IS_ADD_COOR_TURN_GAIN = 1;
 hpfAccWn = 1.0;
-lpfAccWn = 0.1;
+lpfAccWn = 0.5;
 hpfAngleSpdWn = 0.5;
 inputs = zeros(12, 3);
 outputs = zeros(12, 3);
@@ -34,7 +34,14 @@ global accLowPassFilter_nums accLowPassFilter_dens angleHpfAndInt_nums angleHpfA
 [accHighPassFilters_nums, accHighPassFilters_dens] = build_accHighPassFilters();
 [accIntZtrans_nums, accIntZtrans_dens] = build_accIntZtrans();
 [accLowPassFilter_nums, accLowPassFilter_dens] = build_accLowPassFilter();
-[angleHpfAndInt_nums, angleHpfAndInt_dens] = end
+[angleHpfAndInt_nums, angleHpfAndInt_dens] = build_angleHpfAndInt();
+
+for i = 1 : count
+    i
+    [x(i + 1), y(i + 1), z(i + 1), roll(i + 1), pitch(i + 1), yaw(i + 1)] = ...
+        washoutfilterdo(x(i), y(i), z(i), roll(i), pitch(i), yaw(i), ...
+        xacc(i), yacc(i), zacc(i), rollSpeed(i), pitchSpeed(i), rollSpeed(i));
+end
 
 figure;
 plot(pitchSpeed(1:count) * 20);
@@ -45,21 +52,14 @@ plot(pitchtxt(1:count));
 title('pitch')
 legend('pitchSpeed','pitchout', 'pitch')
 
-figure;build_angleHpfAndInt();
-
-for i = 1 : count
-    i
-    [x(i + 1), y(i + 1), z(i + 1), roll(i + 1), pitch(i + 1), yaw(i + 1)] = ...
-        washoutfilterdo(x(i), y(i), z(i), roll(i), pitch(i), yaw(i), ...
-        xacc(i), yacc(i), zacc(i), rollSpeed(i), pitchSpeed(i), rollSpeed(i));
-
+figure;
 plot(rollSpeed(1:count) * 20);
 hold on;
 plot(roll * roll_scale);
 hold on;
 plot(rolltxt(1:count));
 title('roll')
-legend('rollSpeed','rollout', 'roll')
+legend('rollSpeed','rollout', 'roll');
 
 figure;
 hold on;
@@ -68,7 +68,6 @@ hold on;
 plot(x(1:count));
 title('x');
 legend('xacc','x');
-
 
 figure;
 hold on;
@@ -131,17 +130,17 @@ pitch_r = betaS(2);
 yaw_r = betaS(3);
 
 function [xacc, yacc, zacc, rollSpd, pitchSpd, yawSpd, roll, pitch, yaw] = readtxt()
-data = load('illusiondata_now2.txt');
+data = load('illusiondata_now.txt');
 % data = load('errordata.txt');
 xacc = data(1:end, 1);
 yacc = data(1:end, 2);
 zacc = data(1:end, 3);
 rollSpd = data(1:end, 4);
-yawSpd = data(1:end, 5);
-pitchSpd = data(1:end, 6);
+pitchSpd = data(1:end, 5);
+yawSpd = data(1:end, 6);
 roll = data(1:end, 7);
-pitch = data(1:end, 8);
-yaw = data(1:end, 9);
+yaw = data(1:end, 8);
+pitch = data(1:end, 9);
 
 function TsMatrix = buildTsMatrix(roll, pitch, yaw)
 

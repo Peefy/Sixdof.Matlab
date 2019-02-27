@@ -6,11 +6,11 @@ global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
 global roll_scale pitch_scale yaw_scale x_scale y_scale z_scale
 dT = 0.047;
 fs = 1 / dT;
-count = 5000;
+count = 8000;
 IS_USE_TRANS_MATRIX = 1;
 IS_ADD_COOR_TURN_GAIN = 0;
 hpfAccWn = 1.0;
-lpfAccWn = 0.5;
+lpfAccWn = 0.1;
 hpfAngleSpdWn = 0.5;
 inputs = zeros(12, 3);
 outputs = zeros(12, 3);
@@ -34,14 +34,7 @@ global accLowPassFilter_nums accLowPassFilter_dens angleHpfAndInt_nums angleHpfA
 [accHighPassFilters_nums, accHighPassFilters_dens] = build_accHighPassFilters();
 [accIntZtrans_nums, accIntZtrans_dens] = build_accIntZtrans();
 [accLowPassFilter_nums, accLowPassFilter_dens] = build_accLowPassFilter();
-[angleHpfAndInt_nums, angleHpfAndInt_dens] = build_angleHpfAndInt();
-
-for i = 1 : count
-    i
-    [x(i + 1), y(i + 1), z(i + 1), roll(i + 1), pitch(i + 1), yaw(i + 1)] = ...
-        washoutfilterdo(x(i), y(i), z(i), roll(i), pitch(i), yaw(i), ...
-        yacc(i), xacc(i), zacc(i), rollSpeed(i), pitchSpeed(i), rollSpeed(i));
-end
+[angleHpfAndInt_nums, angleHpfAndInt_dens] = end
 
 figure;
 plot(pitchSpeed(1:count) * 20);
@@ -52,7 +45,14 @@ plot(pitchtxt(1:count));
 title('pitch')
 legend('pitchSpeed','pitchout', 'pitch')
 
-figure;
+figure;build_angleHpfAndInt();
+
+for i = 1 : count
+    i
+    [x(i + 1), y(i + 1), z(i + 1), roll(i + 1), pitch(i + 1), yaw(i + 1)] = ...
+        washoutfilterdo(x(i), y(i), z(i), roll(i), pitch(i), yaw(i), ...
+        xacc(i), yacc(i), zacc(i), rollSpeed(i), pitchSpeed(i), rollSpeed(i));
+
 plot(rollSpeed(1:count) * 20);
 hold on;
 plot(roll * roll_scale);
@@ -61,6 +61,22 @@ plot(rolltxt(1:count));
 title('roll')
 legend('rollSpeed','rollout', 'roll')
 
+figure;
+hold on;
+plot(xacc(1:count));
+hold on;
+plot(x(1:count));
+title('x');
+legend('xacc','x');
+
+
+figure;
+hold on;
+plot(yacc(1:count));
+hold on;
+plot(y(1:count));
+title('y');
+legend('yacc','y');
 
 function [x_r, y_r, z_r, roll_r, pitch_r, yaw_r] = washoutfilterdo(x, y, z, roll, pitch, yaw, xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed)
 global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
@@ -115,7 +131,7 @@ pitch_r = betaS(2);
 yaw_r = betaS(3);
 
 function [xacc, yacc, zacc, rollSpd, pitchSpd, yawSpd, roll, pitch, yaw] = readtxt()
-data = load('illusiondata.txt');
+data = load('illusiondata_now2.txt');
 % data = load('errordata.txt');
 xacc = data(1:end, 1);
 yacc = data(1:end, 2);

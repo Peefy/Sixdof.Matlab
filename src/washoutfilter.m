@@ -11,15 +11,77 @@ IS_USE_TRANS_MATRIX = 1;
 IS_ADD_COOR_TURN_GAIN = 1;
 hpfAccWn = 1.0;
 lpfAccWn = 0.5;
-hpfAngleSpdWn = 0.5;
+hpfAngleSpdWn = 0.2;
 inputs = zeros(12, 3);
 outputs = zeros(12, 3);
 roll = zeros(count, 1);    % deg
 pitch = zeros(count, 1);   % deg
 yaw = zeros(count, 1);     % deg
-x = zeros(count, 1);       % deg
-y = zeros(count, 1);       % deg
-z = zeros(count, 1);       % deg
+x = zeros(count, 1);       % mm
+y = zeros(count, 1);       % mm
+z = zeros(count, 1);       % mm
+rollfilter = zeros(count, 1);    % deg
+pitchfilter = zeros(count, 1);   % deg
+yawfilter = zeros(count, 1);     % deg
+xfilter = zeros(count, 1);       % mm
+yfilter = zeros(count, 1);       % mm
+zfilter = zeros(count, 1);       % mm
+
+rollScale = 1.0;
+yawScale = 2.0;
+pitchScale = 1.0;
+rollFilterLevel = 12;
+yawFilterLevel = 12;
+pitchFilterLevel = 12;
+xScale = 0.01;
+yScale = 0.01;
+zScale = 0.01;
+xFilterLevel = 8;
+yFilterLevel = 8;
+zFilterLevel = 8;
+
+xMAFilters.DataHistory = zeros(1, xFilterLevel);
+xMAFilters.Scale = xScale;
+xMAFilters.FilterLevel = xFilterLevel;
+xMAFilters.DataTotal = 0;
+xMAFilters.Rear = 1;
+
+yMAFilters.DataHistory = zeros(1, yFilterLevel);
+yMAFilters.Scale = yScale;
+yMAFilters.FilterLevel = yFilterLevel;
+yMAFilters.DataTotal = 0;
+yMAFilters.Rear = 1;
+
+zMAFilters.DataHistory = zeros(1, zFilterLevel);
+zMAFilters.Scale = zScale;
+zMAFilters.FilterLevel = zFilterLevel;
+zMAFilters.DataTotal = 0;
+zMAFilters.Rear = 1;
+
+zMAFilters.DataHistory = zeros(1, zFilterLevel);
+zMAFilters.Scale = zScale;
+zMAFilters.FilterLevel = zFilterLevel;
+zMAFilters.DataTotal = 0;
+zMAFilters.Rear = 1;
+
+rollMAFilters.DataHistory = zeros(1, rollFilterLevel);
+rollMAFilters.Scale = rollScale;
+rollMAFilters.FilterLevel = rollFilterLevel;
+rollMAFilters.DataTotal = 0;
+rollMAFilters.Rear = 1;
+
+pitchMAFilters.DataHistory = zeros(1, pitchFilterLevel);
+pitchMAFilters.Scale = pitchScale;
+pitchMAFilters.FilterLevel = pitchFilterLevel;
+pitchMAFilters.DataTotal = 0;
+pitchMAFilters.Rear = 1;
+
+yawMAFilters.DataHistory = zeros(1, yawFilterLevel);
+yawMAFilters.Scale = yawScale;
+yawMAFilters.FilterLevel = yawFilterLevel;
+yawMAFilters.DataTotal = 0;
+yawMAFilters.Rear = 1;
+
 roll_scale = 4.0;
 pitch_scale = 4.0;
 yaw_scale = 2.0;
@@ -41,6 +103,12 @@ for i = 1 : count
     [x(i + 1), y(i + 1), z(i + 1), roll(i + 1), pitch(i + 1), yaw(i + 1)] = ...
         washoutfilterdo(x(i), y(i), z(i), roll(i), pitch(i), yaw(i), ...
         xacc(i), yacc(i), zacc(i), rollSpeed(i), pitchSpeed(i), rollSpeed(i));
+    xfilter(i + 1) = MAFilterDo(x(i + 1), xMAFilters);
+    yfilter(i + 1) = MAFilterDo(y(i + 1), yMAFilters);
+    zfilter(i + 1) = MAFilterDo(z(i + 1), zMAFilters);
+    rollfilter(i + 1) = MAFilterDo(roll(i + 1), rollMAFilters);
+    pitchfilter(i + 1) = MAFilterDo(pitch(i + 1), pitchMAFilters);
+    yawfilter(i + 1) = MAFilterDo(yaw(i + 1), yawMAFilters);
 end
 
 figure;
@@ -62,20 +130,36 @@ title('roll')
 legend('rollSpeed','rollout', 'roll');
 
 figure;
+plot(roll);
 hold on;
-plot(xacc(1:count));
+plot(rollfilter);
 hold on;
-plot(x(1:count));
-title('x');
-legend('xacc','x');
+title('rollfilter')
+legend('roll','rollfilter');
 
 figure;
+plot(pitch);
 hold on;
-plot(yacc(1:count));
+plot(pitchfilter);
 hold on;
-plot(y(1:count));
-title('y');
-legend('yacc','y');
+title('pitchfilter')
+legend('pitch','pitchfilter');
+
+% figure;
+% hold on;
+% plot(xacc(1:count));
+% hold on;
+% plot(x(1:count));
+% title('x');
+% legend('xacc','x');
+
+% figure;
+% hold on;
+% plot(yacc(1:count));
+% hold on;
+% plot(y(1:count));
+% title('y');
+% legend('yacc','y');
 
 function [x_r, y_r, z_r, roll_r, pitch_r, yaw_r] = washoutfilterdo(x, y, z, roll, pitch, yaw, xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed)
 global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
@@ -130,17 +214,17 @@ pitch_r = betaS(2);
 yaw_r = betaS(3);
 
 function [xacc, yacc, zacc, rollSpd, pitchSpd, yawSpd, roll, pitch, yaw] = readtxt()
-data = load('illusiondata_now.txt');
+data = load('illusiondata.txt');
 % data = load('errordata.txt');
 xacc = data(1:end, 1);
 yacc = data(1:end, 2);
 zacc = data(1:end, 3);
 rollSpd = data(1:end, 4);
-pitchSpd = data(1:end, 5);
-yawSpd = data(1:end, 6);
+yawSpd = data(1:end, 5);
+pitchSpd = data(1:end, 6);
 roll = data(1:end, 7);
-yaw = data(1:end, 8);
-pitch = data(1:end, 9);
+pitch = data(1:end, 8);
+yaw = data(1:end, 9);
 
 function TsMatrix = buildTsMatrix(roll, pitch, yaw)
 
@@ -265,5 +349,12 @@ plot(yawtxt(1:count));
 title('recieve roll pitch yaw');
 legend('rolltxt','pitchtxt','yawtxt');
 
+function out = MAFilterDo(in, filters)
+filters.DataHistory(filters.Rear) = in;
+filters.Rear = filters.Rear + 1;
+if(filters.Rear > filters.FilterLevel) 
+    filters.Rear = 1;
+end
+out = sum(filters.DataHistory) / filters.FilterLevel * filters.Scale;
 
 

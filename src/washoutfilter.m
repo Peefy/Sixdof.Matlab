@@ -145,21 +145,21 @@ hold on;
 title('pitchfilter')
 legend('pitch','pitchfilter');
 
-% figure;
-% hold on;
-% plot(xacc(1:count));
-% hold on;
-% plot(x(1:count));
-% title('x');
-% legend('xacc','x');
+figure;
+hold on;
+plot(xacc(1:count));
+hold on;
+plot(x(1:count));
+title('x');
+legend('xacc','x');
 
-% figure;
-% hold on;
-% plot(yacc(1:count));
-% hold on;
-% plot(y(1:count));
-% title('y');
-% legend('yacc','y');
+figure;
+hold on;
+plot(yacc(1:count));
+hold on;
+plot(y(1:count));
+title('y');
+legend('yacc','y');
 
 function [x_r, y_r, z_r, roll_r, pitch_r, yaw_r] = washoutfilterdo(x, y, z, roll, pitch, yaw, xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed)
 global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
@@ -214,7 +214,7 @@ pitch_r = betaS(2);
 yaw_r = betaS(3);
 
 function [xacc, yacc, zacc, rollSpd, pitchSpd, yawSpd, roll, pitch, yaw] = readtxt()
-data = load('illusiondata.txt');
+data = load('illusiondataNow.txt');
 % data = load('errordata.txt');
 xacc = data(1:end, 1);
 yacc = data(1:end, 2);

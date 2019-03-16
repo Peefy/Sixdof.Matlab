@@ -1,7 +1,8 @@
 clc;
 close all;
-hz = 1;
+hz = 0.651;
 chirpTime = 2.5;
+val = 0.2;
 t = 0 : 0.00095 :  20.775;
 count = length(t);
 f = 0 : 0.00095 :  20.775;
@@ -18,10 +19,10 @@ finalstopTime = (pi * index + 0.5 * pi) / (2 * pi * hz) + chirpTime - 1;
 for k = 1 : count;
     if t(k) <= chirpTime
         f(k) = t(k) * hz / chirpTime / chirpTime;
-        y(k) = sin(2 * pi * f(k) * t(k));
+        y(k) = val * sin(2 * pi * f(k) * t(k));
     else
         if t(k) <= finalstopTime
-            y(k) = sin(2 * pi * hz * (t(k) - chirpTime) + 2 * pi * hz);
+            y(k) = val * sin(2 * pi * hz * (t(k) - chirpTime) + 2 * pi * hz);
         else
             y(k) = 0;
         end

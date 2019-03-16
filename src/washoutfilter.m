@@ -6,7 +6,7 @@ global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
 global roll_scale pitch_scale yaw_scale x_scale y_scale z_scale
 dT = 0.047;
 fs = 1 / dT;
-count = 8000;
+count = 5000;
 IS_USE_TRANS_MATRIX = 1;
 IS_ADD_COOR_TURN_GAIN = 1;
 hpfAccWn = 1.0;
@@ -214,8 +214,9 @@ pitch_r = betaS(2);
 yaw_r = betaS(3);
 
 function [xacc, yacc, zacc, rollSpd, pitchSpd, yawSpd, roll, pitch, yaw] = readtxt()
-data = load('illusiondata.txt');
+% data = load('illusiondata.txt');
 % data = load('errordata.txt');
+data = load('data.txt');
 xacc = data(1:end, 1);
 yacc = data(1:end, 2);
 zacc = data(1:end, 3);

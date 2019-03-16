@@ -1,12 +1,13 @@
 clc;
 close all;
-hz = 0.651;
+hz = 0.06;
 chirpTime = 2.5;
 val = 0.2;
-t = 0 : 0.00095 :  20.775;
+deltat = 0.026;
+t = 0 : deltat :  20.775;
 count = length(t);
-f = 0 : 0.00095 :  20.775;
-y = 0 : 0.00095 :  20.775;
+f = 0 : deltat :  20.775;
+y = 0 : deltat :  20.775;
 stopTime = 9;
 index = 0;
 for i = -1 : 100

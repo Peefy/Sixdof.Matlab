@@ -6,12 +6,12 @@ global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
 global roll_scale pitch_scale yaw_scale x_scale y_scale z_scale
 dT = 0.047;
 fs = 1 / dT;
-count = 5000;
+count = 10000;
 IS_USE_TRANS_MATRIX = 1;
 IS_ADD_COOR_TURN_GAIN = 1;
 hpfAccWn = 1.0;
 lpfAccWn = 0.5;
-hpfAngleSpdWn = 0.2;
+hpfAngleSpdWn = 0.1;
 inputs = zeros(12, 3);
 outputs = zeros(12, 3);
 roll = zeros(count, 1);    % deg
@@ -30,9 +30,9 @@ zfilter = zeros(count, 1);       % mm
 rollScale = 1.0;
 yawScale = 2.0;
 pitchScale = 1.0;
-rollFilterLevel = 12;
-yawFilterLevel = 12;
-pitchFilterLevel = 12;
+rollFilterLevel = 4;
+yawFilterLevel = 4;
+pitchFilterLevel = 4;
 xScale = 0.1;
 yScale = 0.1;
 zScale = 0.1;
@@ -109,6 +109,7 @@ for i = 1 : count
     rollfilter(i + 1) = MAFilterDo(roll(i + 1), rollMAFilters);
     pitchfilter(i + 1) = MAFilterDo(pitch(i + 1), pitchMAFilters);
     yawfilter(i + 1) = MAFilterDo(yaw(i + 1), yawMAFilters);
+
 end
 
 figure;
@@ -216,13 +217,13 @@ yaw_r = betaS(3);
 function [xacc, yacc, zacc, rollSpd, pitchSpd, yawSpd, roll, pitch, yaw] = readtxt()
 % data = load('illusiondata.txt');
 % data = load('errordata.txt');
-data = load('data.txt');
+data = load('illusiondata0331.txt');
 xacc = data(1:end, 1);
 yacc = data(1:end, 2);
 zacc = data(1:end, 3);
 rollSpd = data(1:end, 4);
-yawSpd = data(1:end, 5);
-pitchSpd = data(1:end, 6);
+pitchSpd = data(1:end, 5);
+yawSpd = data(1:end, 6);
 roll = data(1:end, 7);
 pitch = data(1:end, 8);
 yaw = data(1:end, 9);

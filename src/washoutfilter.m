@@ -88,8 +88,8 @@ yaw_scale = 2.0;
 x_scale = 2.0;
 y_scale = 2.0; 
 z_scale = 2.0;
-[xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed, rolltxt, pitchtxt, yawtxt] = readtxt();
-plotAllRecieveData(xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed, rolltxt, pitchtxt, yawtxt);
+[xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed, rolltxt, pitchtxt, yawtxt, planeType] = readtxt();
+plotAllRecieveData(xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed, rolltxt, pitchtxt, yawtxt, planeType);
 
 global accHighPassFilters_nums accHighPassFilters_dens accIntZtrans_nums accIntZtrans_dens
 global accLowPassFilter_nums accLowPassFilter_dens angleHpfAndInt_nums angleHpfAndInt_dens
@@ -162,6 +162,14 @@ plot(y(1:count));
 title('y');
 legend('yacc','y');
 
+figure;
+hold on;
+plot(zacc(1:count));
+hold on;
+plot(z(1:count));
+title('z');
+legend('zacc','z');
+
 function [x_r, y_r, z_r, roll_r, pitch_r, yaw_r] = washoutfilterdo(x, y, z, roll, pitch, yaw, xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed)
 global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
 global accHighPassFilters_nums accHighPassFilters_dens accIntZtrans_nums accIntZtrans_dens
@@ -227,6 +235,8 @@ yawSpd = data(1:end, 6);
 roll = data(1:end, 7);
 pitch = data(1:end, 8);
 yaw = data(1:end, 9);
+%planeType = zeros(0, length(xacc)); 
+planeType = data(1:end, 10);
 
 function TsMatrix = buildTsMatrix(roll, pitch, yaw)
 
@@ -288,7 +298,7 @@ nums(1) = 0; nums(2) = 0; nums(3) = lpfAccWn * lpfAccWn;
 dens(1) = 1; dens(2) = 2 * 1 * lpfAccWn; dens(3) = lpfAccWn * lpfAccWn;
 [numsd, densd] = bilinear(nums, dens, fs);
 
-function [numsd, densd] = build_angleHpfAndInt();
+function [numsd, densd] = build_angleHpfAndInt()
 global fs hpfAngleSpdWn
 nums = zeros(1, 3);
 dens = zeros(1, 3);
@@ -318,7 +328,7 @@ output = circshift(output',1)';
 output(1) = out;
 outputs(filtersindex, 1:end) = output;
 
-function plotAllRecieveData(xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed, rolltxt, pitchtxt, yawtxt)
+function plotAllRecieveData(xacc, yacc, zacc, rollSpeed, pitchSpeed, yawSpeed, rolltxt, pitchtxt, yawtxt, planeType)
 global count
 figure;
 plot(xacc(1:count));
@@ -350,6 +360,10 @@ hold on;
 plot(yawtxt(1:count));
 title('recieve roll pitch yaw');
 legend('rolltxt','pitchtxt','yawtxt');
+
+figure;
+plot(planeType(1:count));
+title('palneType');
 
 function out = MAFilterDo(in, filters)
 filters.DataHistory(filters.Rear) = in;

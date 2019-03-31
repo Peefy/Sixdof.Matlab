@@ -168,7 +168,7 @@ global accHighPassFilters_nums accHighPassFilters_dens accIntZtrans_nums accIntZ
 global accLowPassFilter_nums accLowPassFilter_dens angleHpfAndInt_nums angleHpfAndInt_dens
 acc_scale = 0.01;
 angleSpd_scale = 10.0;
-coor_turn_gain = 0.1;
+coor_turn_gain = 1.0;
 rollrad = deg2rad(roll);
 pitchrad = deg2rad(pitch);
 yawrad = deg2rad(yaw);

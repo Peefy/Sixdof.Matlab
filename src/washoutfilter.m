@@ -222,7 +222,7 @@ roll_r = betaS(1);
 pitch_r = betaS(2);
 yaw_r = betaS(3);
 
-function [xacc, yacc, zacc, rollSpd, pitchSpd, yawSpd, roll, pitch, yaw] = readtxt()
+function [xacc, yacc, zacc, rollSpd, pitchSpd, yawSpd, roll, pitch, yaw, planeType] = readtxt()
 % data = load('illusiondata.txt');
 % data = load('errordata.txt');
 data = load('illusiondata0331.txt');
@@ -235,8 +235,8 @@ yawSpd = data(1:end, 6);
 roll = data(1:end, 7);
 pitch = data(1:end, 8);
 yaw = data(1:end, 9);
-%planeType = zeros(0, length(xacc)); 
-planeType = data(1:end, 10);
+planeType = zeros(0, length(xacc)); 
+% planeType = data(1:end, 10);
 
 function TsMatrix = buildTsMatrix(roll, pitch, yaw)
 

@@ -6,7 +6,7 @@ global IS_USE_TRANS_MATRIX IS_ADD_COOR_TURN_GAIN
 global roll_scale pitch_scale yaw_scale x_scale y_scale z_scale
 dT = 0.047;
 fs = 1 / dT;
-count = 10000;
+count = 8000;
 IS_USE_TRANS_MATRIX = 1;
 IS_ADD_COOR_TURN_GAIN = 1;
 hpfAccWn = 1.0;
@@ -209,10 +209,12 @@ for i = 1 : ACC_NUM
     poses(i) = filtersdo(ahigh(i),accIntZtrans_nums, accIntZtrans_dens ,filtersindex) * 1000.0; filtersindex = filtersindex + 1;
     flow(i) = filtersdo(fAA(i),accLowPassFilter_nums, accLowPassFilter_dens ,filtersindex); filtersindex = filtersindex + 1;
     betalow(i) = rad2deg(flow(i) * coor_turn_gain);
+    betaS(i) = filtersdo(beta2(i), angleHpfAndInt_nums, angleHpfAndInt_dens, filtersindex); filtersindex = filtersindex + 1;
     if IS_ADD_COOR_TURN_GAIN == 1
-		betaS(i) = betalow(i) + filtersdo(beta2(i),angleHpfAndInt_nums, angleHpfAndInt_dens, filtersindex); filtersindex = filtersindex + 1;
+		betaS(0) = betaS(0) + betalow(1);
+        betaS(1) = betaS(1) + betalow(0);
     else
-        betaS(i) = filtersdo(beta2(i), angleHpfAndInt_nums, angleHpfAndInt_dens, filtersindex); filtersindex = filtersindex + 1;
+       
     end
 end
 x_r = poses(1);
@@ -235,8 +237,8 @@ yawSpd = data(1:end, 6);
 roll = data(1:end, 7);
 pitch = data(1:end, 8);
 yaw = data(1:end, 9);
-planeType = zeros(0, length(xacc)); 
-% planeType = data(1:end, 10);
+% planeType = zeros(0, length(xacc)); 
+planeType = data(1:end, 10);
 
 function TsMatrix = buildTsMatrix(roll, pitch, yaw)
 

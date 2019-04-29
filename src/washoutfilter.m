@@ -9,9 +9,9 @@ fs = 1 / dT;
 count = 8000;
 IS_USE_TRANS_MATRIX = 1;
 IS_ADD_COOR_TURN_GAIN = 1;
-hpfAccWn = 1.0;
-lpfAccWn = 0.5;
-hpfAngleSpdWn = 0.1;
+hpfAccWn = 1.2;
+lpfAccWn = 0.6;
+hpfAngleSpdWn = 0.2;
 inputs = zeros(12, 3);
 outputs = zeros(12, 3);
 roll = zeros(count, 1);    % deg
@@ -211,8 +211,8 @@ for i = 1 : ACC_NUM
     betalow(i) = rad2deg(flow(i) * coor_turn_gain);
     betaS(i) = filtersdo(beta2(i), angleHpfAndInt_nums, angleHpfAndInt_dens, filtersindex); filtersindex = filtersindex + 1;
     if IS_ADD_COOR_TURN_GAIN == 1
-		betaS(0) = betaS(0) + betalow(1);
-        betaS(1) = betaS(1) + betalow(0);
+		betaS(1) = betaS(1) + betalow(2);
+        betaS(2) = betaS(2) + betalow(1);
     else
        
     end

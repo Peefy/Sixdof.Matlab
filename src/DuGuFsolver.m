@@ -31,11 +31,11 @@ f6(x(1), x(2), x(3), x(4), x(5), x(6))
 ];
 x = fsolve(f, [0 0 0 0 0 0]);
 
-dLens = [10 20 20 20 20 20];
+dLens = [40 30 30 30 30 40];
 UpZ = 100;
 DownZ = 700;
 UpR = 680;
 DownR = 840;
 Dis = 190;
-[xx, yy, zz, roll, yaw, pitch] = ForwardKinematics(dLens)
+[xx, yy, zz, roll, pitch, yaw] = ForwardKinematics(dLens)
 

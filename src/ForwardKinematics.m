@@ -1,4 +1,4 @@
-function [xx, yy, zz, roll, yaw, pitch] = ForwardKinematics(dLen1, dLen2, dLen3, dLen4, dLen5, dLen6)
+function [xx, yy, zz, roll, pitch, yaw] = ForwardKinematics(dLen1, dLen2, dLen3, dLen4, dLen5, dLen6)
 
 UpZ = 100;
 DownZ = 700;
